@@ -2,4 +2,6 @@
 
 - hosts: mantle
   roles:
+    - common
+    - mantle
 

@@ -1,15 +1,35 @@
 ---
 
-- name: Install common packages from apt
-  apt: pkg={{item}} state=installed update_cache=yes
-  sudo: True
-  with_items:
-    - git
-    - supervisor
+  - name: Install common packages from apt
+    apt: pkg={{item}} state=installed update_cache=yes
+    sudo: True
+    with_items:
+      - git
+      - supervisor
 
-- name: Create mantle group
-  user: name=mantle
+  - name: Create mantle group
+    user: name=mantle
 
-- name: Create mantle user
-  user: name=mantle group=mantle shell=/bin/bash
+  - name: Create mantle user
+    user: name=mantle group=mantle shell=/bin/bash
+
+  - name: Install meteor
+    shell: curl https://install.meteor.com/ | sh
+    sudo: yes
+    args:
+      creates: /usr/local/bin/meteor
+
+  - name: Install nvm for mantle user
+    shell: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash
+    sudo: yes
+    sudo_user: mantle
+    args:
+      creates: /home/mantle/.nvm
+
+  - name: Install nodejs for mantle user
+    shell: ". ~/.nvm/nvm.sh && nvm install {{ nodejs_version }} && nvm alias default {{ nodejs_version }}"
+    sudo: yes
+    sudo_user: mantle
+    args:
+      executable: /bin/bash
 

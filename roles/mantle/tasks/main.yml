@@ -1,0 +1,49 @@
+---
+
+  - name: Sync mantle code
+    git: 
+      repo: https://github.com/ecohealthalliance/mantle.git
+      dest: "{{ mantle_checkout_destination }}"
+      accept_hostkey: yes
+      version: "{{ mantle_branch }}"
+      depth: 1
+      force: yes
+    notify: restart mantle
+    register: mantle
+
+  - file: path="{{ mantle_checkout_destination }}/build" state=absent
+    when: mantle.changed
+
+  - file: path="{{ mantle_checkout_destination }}/bundle" state=absent
+    when: mantle.changed
+  
+  - file: path=/home/mantle owner=mantle group=mantle recurse=yes
+
+  - name: Meteor build
+    shell: meteor build build
+    sudo: yes
+    sudo_user: mantle
+    args:
+      creates: "{{ mantle_checkout_destination }}/build/mantle.tar.gz"
+      chdir: "{{ mantle_checkout_destination }}"
+
+  - name: Extract build tarball
+    unarchive: src="{{ mantle_checkout_destination }}/build/mantle.tar.gz" dest="{{ mantle_checkout_destination }}"
+
+  - name: Install npm modules
+    shell: "/home/mantle/.nvm/{{ nodejs_version }}/bin/npm install"
+    args:
+      chdir: "{{ mantle_checkout_destination }}/bundle/programs/server"
+    sudo: yes
+    sudo_user: mantle
+
+  - name: Install supervisord config
+    template: src=mantle.conf.j2 dest=/etc/supervisor/conf.d/mantle.conf
+    sudo: yes
+    sudo_user: root
+    notify: restart supervisor
+
+  - name: Start mantle
+    supervisorctl: name="mantle" state=started
+    sudo: yes
+    sudo_user: root

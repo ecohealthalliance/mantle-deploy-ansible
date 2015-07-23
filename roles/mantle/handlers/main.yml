@@ -1,0 +1,8 @@
+---
+
+  - name: restart mantle
+    supervisorctl: name=mantle state=restarted
+    sudo: yes
+
+  - name: restart supervisor
+    service: name=supervisor state=restarted

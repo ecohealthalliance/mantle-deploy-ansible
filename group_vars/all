@@ -1,0 +1,11 @@
+---
+
+mantle_checkout_destination: /home/mantle/mantle
+mantle_branch: master
+mongo_url: localhost
+meteor_port: 3001
+meteor_db_name: mantle
+mongo_host: localhost
+mongo_port: 27017
+meteor_mongo: "mongodb://{{mongo_host}}:{{mongo_port}}/{{ meteor_db_name }}"
+nodejs_version: v0.10.40
