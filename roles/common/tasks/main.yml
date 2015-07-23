@@ -1,0 +1,15 @@
+---
+
+- name: Install common packages from apt
+  apt: pkg={{item}} state=installed update_cache=yes
+  sudo: True
+  with_items:
+    - git
+    - supervisor
+
+- name: Create mantle group
+  user: name=mantle
+
+- name: Create mantle user
+  user: name=mantle group=mantle shell=/bin/bash
+
