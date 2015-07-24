@@ -28,7 +28,11 @@
       chdir: "{{ mantle_checkout_destination }}"
 
   - name: Extract build tarball
-    unarchive: src="{{ mantle_checkout_destination }}/build/mantle.tar.gz" dest="{{ mantle_checkout_destination }}"
+    shell: "tar -zxf {{ mantle_checkout_destination }}/build/mantle.tar.gz"
+    args:
+      chdir: "{{ mantle_checkout_destination }}"
+    sudo: yes
+    sudo_user: mantle   
 
   - name: Install npm modules
     shell: "/home/mantle/.nvm/{{ nodejs_version }}/bin/npm install"
