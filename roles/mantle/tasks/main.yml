@@ -43,6 +43,8 @@
     sudo_user: root
     notify: restart supervisor
 
+  - file: path="{{ mantle_checkout_destination }}/.meteor/local/db" state=directory owner=mantle group=mantle
+
   - name: Start mantle
     supervisorctl: name="mantle" state=started
     sudo: yes
